@@ -28,7 +28,7 @@ use Symfony\Component\Console\Output\ConsoleOutput;
  */
 class PluginDefinition implements PluginInterface, Capable, EventSubscriberInterface
 {
-    public const PACKAGE_NAME = 'magento/composer-root-update-plugin';
+    public const PACKAGE_NAME = 'mage-os/composer-root-update-plugin';
 
     /**
      * @inheritdoc
@@ -73,8 +73,8 @@ class PluginDefinition implements PluginInterface, Capable, EventSubscriberInter
     }
 
     /**
-     * If the 'require' command is being run with magento/product-community-edition, magento/product-enterprise-edition,
-     * or magento/magento-cloud-metapackage, tell the user to use 'require-commerce' instead
+     * If the 'require' command is being run with mage-os/product-community-edition or
+     * mage-os/product-minimal-edition, tell the user to use 'require-commerce' instead
      *
      * @param PreCommandRunEvent $event
      */
@@ -88,13 +88,11 @@ class PluginDefinition implements PluginInterface, Capable, EventSubscriberInter
             foreach ($requires as $requirement) {
                 $packageName = strtolower($requirement['name']);
                 if ($packageName == PackageUtils::OPEN_SOURCE_METAPACKAGE
-                    || $packageName == PackageUtils::COMMERCE_METAPACKAGE
-                    || $packageName == PackageUtils::CLOUD_METAPACKAGE
+                    || $packageName == PackageUtils::MINIMAL_METAPACKAGE
                 ) {
                     $newCmd = RequireCommerceCommand::COMMAND_NAME;
                     $console = new Console(new ConsoleIO($input, new ConsoleOutput(), new HelperSet()), false);
-                    $metaLabels = PackageUtils::OPEN_SOURCE_METAPACKAGE . ', ' . PackageUtils::COMMERCE_METAPACKAGE .
-                        ', or ' . PackageUtils::CLOUD_METAPACKAGE;
+                    $metaLabels = PackageUtils::OPEN_SOURCE_METAPACKAGE . ' or ' . PackageUtils::MINIMAL_METAPACKAGE;
                     if (version_compare(Composer::VERSION, '2.1.6', '>=')) {
                         $msg = "ERROR: 'composer require' does not function properly for $metaLabels metapackages as " .
                             "of Composer 2.1.6. Use '$newCmd' instead.";

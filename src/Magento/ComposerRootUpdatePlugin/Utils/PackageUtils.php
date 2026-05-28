@@ -18,7 +18,9 @@ use Composer\Package\Version\VersionParser;
 class PackageUtils
 {
     public const OPEN_SOURCE_PKG_EDITION = 'community';
-    public const OPEN_SOURCE_METAPACKAGE = 'magento/product-community-edition';
+    public const OPEN_SOURCE_METAPACKAGE = 'mage-os/product-community-edition';
+    public const MINIMAL_PKG_EDITION = 'minimal';
+    public const MINIMAL_METAPACKAGE = 'mage-os/product-minimal-edition';
     public const COMMERCE_PKG_EDITION = 'enterprise';
     public const COMMERCE_METAPACKAGE = 'magento/product-enterprise-edition';
     public const CLOUD_PKG_EDITION = 'cloud';
@@ -46,20 +48,16 @@ class PackageUtils
     }
 
     /**
-     * Helper function to extract the edition from a package name if it is a magento/product or cloud metapackage
-     * For the purposes of this plugin, 'cloud' is treated as an edition
+     * Helper function to extract the edition from a package name if it is a mage-os/product metapackage
      *
      * @param string $packageName
-     * @return string|null CLOUD_PKG_EDITION, OPEN_SOURCE_PKG_EDITION, COMMERCE_PKG_EDITION, or null
+     * @return string|null OPEN_SOURCE_PKG_EDITION, MINIMAL_PKG_EDITION, or null
      */
     public function getMetapackageEdition(string $packageName): ?string
     {
         $packageName = strtolower($packageName);
-        if ($packageName == self::CLOUD_METAPACKAGE) {
-            return self::CLOUD_PKG_EDITION;
-        }
-        $regex = '/^magento\/product-(?<edition>' . self::OPEN_SOURCE_PKG_EDITION . '|' .
-            self::COMMERCE_PKG_EDITION . ')-edition$/';
+        $regex = '/^mage-os\/product-(?<edition>' . self::OPEN_SOURCE_PKG_EDITION . '|' .
+            self::MINIMAL_PKG_EDITION . ')-edition$/';
         if ($packageName && preg_match($regex, $packageName, $matches)) {
             return $matches['edition'];
         } else {
@@ -75,11 +73,7 @@ class PackageUtils
      */
     public function getProjectPackageName(string $edition): string
     {
-        if (strtolower($edition) == self::CLOUD_PKG_EDITION) {
-            return 'magento/magento-cloud-template';
-        } else {
-            return strtolower("magento/project-$edition-edition");
-        }
+        return strtolower("mage-os/project-$edition-edition");
     }
 
     /**
@@ -90,11 +84,7 @@ class PackageUtils
      */
     public function getMetapackageName(string $edition): string
     {
-        if (strtolower($edition) == self::CLOUD_PKG_EDITION) {
-            return self::CLOUD_METAPACKAGE;
-        } else {
-            return strtolower("magento/product-$edition-edition");
-        }
+        return strtolower("mage-os/product-$edition-edition");
     }
 
     /**
@@ -106,11 +96,9 @@ class PackageUtils
     public function getEditionLabel(string $packageEdition): ?string
     {
         if ($packageEdition == self::OPEN_SOURCE_PKG_EDITION) {
-            return 'Magento Open Source';
-        } elseif ($packageEdition == self::COMMERCE_PKG_EDITION) {
-            return 'Adobe Commerce';
-        } elseif ($packageEdition == self::CLOUD_PKG_EDITION) {
-            return 'Adobe Commerce Cloud';
+            return 'Mage-OS';
+        } elseif ($packageEdition == self::MINIMAL_PKG_EDITION) {
+            return 'Mage-OS Minimal';
         }
         return null;
     }
