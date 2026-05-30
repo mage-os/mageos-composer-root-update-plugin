@@ -81,11 +81,50 @@ class RootPackageRetrieverTest extends UpdatePluginTestCase
     {
         $this->composer->expects($this->once())->method('getLocker');
 
-        $retriever = new RootPackageRetriever($this->console, $this->composer, 'enterprise', '2.0.0');
+        $retriever = new RootPackageRetriever($this->console, $this->composer, 'community', '2.0.0');
 
-        $this->assertEquals('enterprise', $retriever->getOriginalEdition());
+        $this->assertEquals('community', $retriever->getOriginalEdition());
         $this->assertEquals('1.1.0.0', $retriever->getOriginalVersion());
         $this->assertEquals('1.1.0', $retriever->getPrettyOriginalVersion());
+    }
+
+    public function testOriginalEditionNullWhenLockUnrecognized()
+    {
+        // A composer.lock referencing a non-Mage-OS metapackage (e.g. a magento/* installation being migrated)
+        // is not recognized as an origin. The retriever must return null for the edition/version rather than
+        // throwing a TypeError, so callers can degrade gracefully / require explicit base-project options.
+        $io = $this->getMockForAbstractClass(IOInterface::class);
+        $console = new Console($io);
+
+        $unrecognized = $this->getMockForAbstractClass(PackageInterface::class);
+        $unrecognized->method('getName')->willReturn('magento/product-community-edition');
+        $unrecognized->method('getVersion')->willReturn('2.4.8.0');
+        $unrecognized->method('getPrettyVersion')->willReturn('2.4.8');
+
+        $lockedRepo = $this->getMockForAbstractClass(
+            LockArrayRepository::class,
+            [],
+            '',
+            true,
+            true,
+            true,
+            ['getPackages'],
+            false
+        );
+        $lockedRepo->method('getPackages')->willReturn([$unrecognized]);
+
+        $locker = $this->createPartialMock(Locker::class, ['isLocked', 'getLockedRepository']);
+        $locker->method('isLocked')->willReturn(true);
+        $locker->method('getLockedRepository')->willReturn($lockedRepo);
+
+        $composer = $this->createPartialMock(Composer::class, ['getLocker', 'getPackage']);
+        $composer->method('getLocker')->willReturn($locker);
+        $composer->method('getPackage')->willReturn($this->userRoot);
+
+        $retriever = new RootPackageRetriever($console, $composer, 'community', '3.0.0');
+
+        $this->assertNull($retriever->getOriginalEdition());
+        $this->assertNull($retriever->getOriginalVersion());
     }
 
     public function testGetOriginalRootFromRepo()
@@ -221,7 +260,7 @@ class RootPackageRetrieverTest extends UpdatePluginTestCase
             false
         );
         $originalProduct = $this->getMockForAbstractClass(PackageInterface::class);
-        $originalProduct->method('getName')->willReturn('magento/product-enterprise-edition');
+        $originalProduct->method('getName')->willReturn('mage-os/product-community-edition');
         $originalProduct->method('getVersion')->willReturn('1.1.0.0');
         $originalProduct->method('getPrettyVersion')->willReturn('1.1.0');
         $lockedRepo->method('getPackages')->willReturn([$originalProduct]);
