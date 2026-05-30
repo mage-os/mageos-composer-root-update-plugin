@@ -3,8 +3,8 @@
     "version": "1.0.0",
     "type": "project",
     "require": {
-        "magento/product-community-edition": "1000.1000.1000",
-        "magento/composer-root-update-plugin": "*",
+        "mage-os/product-community-edition": "1000.1000.1000",
+        "mage-os/composer-root-update-plugin": "*",
         "vendor1/package1": "2.0.0"
     },
     "require-dev": {
