@@ -510,17 +510,22 @@ class RootPackageRetriever
     }
 
     /**
-     * @return string
+     * Null when the currently-installed metapackage edition could not be determined (e.g. the composer.lock
+     * references a different distribution such as magento/*). Callers must handle null rather than assume a string.
+     *
+     * @return string|null
      */
-    public function getOriginalEdition(): string
+    public function getOriginalEdition(): ?string
     {
         return $this->origEdition;
     }
 
     /**
-     * @return string
+     * Null when the currently-installed metapackage version could not be determined. See getOriginalEdition().
+     *
+     * @return string|null
      */
-    public function getOriginalVersion(): string
+    public function getOriginalVersion(): ?string
     {
         return $this->origVersion;
     }
