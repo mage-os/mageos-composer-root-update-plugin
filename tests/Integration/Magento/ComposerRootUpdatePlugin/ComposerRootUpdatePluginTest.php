@@ -46,7 +46,7 @@ class ComposerRootUpdatePluginTest extends TestCase
         $expectedDir = static::$expectedDir;
         static::configureComposerJson(__DIR__ . '/_files/expected_no_override.composer.json', $expectedDir);
 
-        static::execComposer('require-commerce magento/product-community-edition=1000.1000.1000 --no-update --verbose');
+        static::execComposer('require-commerce mage-os/product-community-edition=1000.1000.1000 --no-update --verbose');
 
         $this->assertJsonFileEqualsJsonFile("$expectedDir/composer.json", static::$workingDir . '/composer.json');
     }
@@ -57,7 +57,7 @@ class ComposerRootUpdatePluginTest extends TestCase
         static::configureComposerJson(__DIR__ . '/_files/expected_override.composer.json', $expectedDir);
 
         static::execComposer(
-            'require-commerce magento/product-community-edition=1000.1000.1000 --no-update --force-root-updates --verbose'
+            'require-commerce mage-os/product-community-edition=1000.1000.1000 --no-update --force-root-updates --verbose'
         );
 
         $this->assertJsonFileEqualsJsonFile("$expectedDir/composer.json", static::$workingDir . '/composer.json');

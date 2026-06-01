@@ -81,6 +81,19 @@ class RootProjectUpdater
         $origVersion = $retriever->getOriginalVersion();
         $prettyOrigVersion = $retriever->getPrettyOriginalVersion();
 
+        if ($origEdition === null || $origVersion === null) {
+            // The currently-installed Mage-OS metapackage could not be determined from composer.lock (for
+            // example when migrating from a magento/* installation, which this plugin no longer recognizes as
+            // an origin). Skip gracefully instead of failing with a TypeError; the base project can be supplied
+            // explicitly with --base-project-edition / --base-project-version when an upgrade is intended.
+            $this->console->warning(
+                'Could not determine the currently-installed Mage-OS edition/version from composer.lock; ' .
+                'skipping root composer.json update. Re-run with --base-project-edition and ' .
+                '--base-project-version to supply the base project explicitly.'
+            );
+            return false;
+        }
+
         if (!$retriever->getTargetRootPackage($ignorePlatformReqs, $phpVersion, $stability)) {
             throw new RuntimeException('Root composer.json updates cannot run without a valid target metapackage');
         }

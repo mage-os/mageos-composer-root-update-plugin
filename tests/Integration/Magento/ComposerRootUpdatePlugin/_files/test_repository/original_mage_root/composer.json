@@ -1,11 +1,11 @@
 {
-    "name": "magento/project-community-edition",
+    "name": "mage-os/project-community-edition",
     "version": "999.999.999",
     "type": "project",
     "description": "Test root project composer.json for the default install of the user's pre-upgrade version",
     "require": {
-        "magento/product-community-edition" : "999.999.999",
-        "magento/composer-root-update-plugin": "*",
+        "mage-os/product-community-edition" : "999.999.999",
+        "mage-os/composer-root-update-plugin": "*",
         "vendor1/package1": "1.0.0"
     },
     "require-dev": {
